@@ -1,6 +1,21 @@
+# Python Virtual Environments
 venv/
+.venv/
+env/
+
+# Python Cache
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+
+# PlatformIO files
+.pio/
+.clang_complete
+.gcc-flags.json
+
+# Environment / IDE files
 .env
+.vscode/
 .DS_Store
 *.log

@@ -1,3 +1,4 @@
+#include <Arduino.h>
 #include <ESP32Servo.h>
 
 Servo base;
@@ -46,7 +47,7 @@ const int BASE_IZQUIERDA = 100;
 //
 int posPinza = PINZA_CERRADA;   // 135
 int posCodo1 = CODO1_VERTICAL;  // 20
-// int posCodo2 = CODO2_ATRAS;     // 140
+int posCodo2 = CODO2_ATRAS;     // 140
 
 // =====================
 // COMANDOS
@@ -66,6 +67,11 @@ bool servosActivos = true;
 String trama = "";
 
 unsigned long lastUpdate = 0;
+
+// Declaraciones de funciones para compatibilidad C++ puro (PlatformIO)
+void recibirSerial();
+void procesarTrama(String data);
+void moverServos();
 
 // =====================================================
 void setup()
