@@ -1,5 +1,13 @@
 import math
 
+from config import (
+    CENTER_X_HIGH,
+    CENTER_X_LOW,
+    CENTER_Y_HIGH,
+    CENTER_Y_LOW,
+    PINZA_UMBRAL as CONFIG_PINZA_UMBRAL
+)
+
 
 class GestureDetector:
 
@@ -7,13 +15,13 @@ class GestureDetector:
     # ZONAS MUERTAS
     # ==================================
 
-    X_LOW = 0.40
-    X_HIGH = 0.60
+    X_LOW = CENTER_X_LOW
+    X_HIGH = CENTER_X_HIGH
 
-    Y_LOW = 0.40
-    Y_HIGH = 0.60
+    Y_LOW = CENTER_Y_LOW
+    Y_HIGH = CENTER_Y_HIGH
 
-    PINZA_UMBRAL = 0.08
+    PINZA_UMBRAL = CONFIG_PINZA_UMBRAL
 
     # ==================================
     # PROCESAMIENTO
@@ -43,38 +51,35 @@ class GestureDetector:
 
             x = wrist.x
             y = wrist.y
+            left_hand_closed = self.hand_is_closed(
+                left_hand
+            )
 
             # ----------------------
             # BASE
             # ----------------------
 
-            if x < self.X_LOW:
+            if left_hand_closed:
 
-                state["base"] = -1
-
-            elif x > self.X_HIGH:
-
-                state["base"] = 1
-
-            else:
-
-                state["base"] = 0
+                state["base"] = self.axis_state(
+                    x,
+                    self.X_LOW,
+                    self.X_HIGH,
+                    -1,
+                    1
+                )
 
             # ----------------------
             # CODO 1
             # ----------------------
 
-            if y < self.Y_LOW:
-
-                state["codo1"] = 1
-
-            elif y > self.Y_HIGH:
-
-                state["codo1"] = -1
-
-            else:
-
-                state["codo1"] = 0
+            state["codo1"] = self.axis_state(
+                y,
+                self.Y_LOW,
+                self.Y_HIGH,
+                1,
+                -1
+            )
 
         # ==========================
         # MANO DERECHA
@@ -91,17 +96,13 @@ class GestureDetector:
             # CODO2
             # ----------------------
 
-            if y < self.Y_LOW:
-
-                state["codo2"] = 1
-
-            elif y > self.Y_HIGH:
-
-                state["codo2"] = -1
-
-            else:
-
-                state["codo2"] = 0
+            state["codo2"] = self.axis_state(
+                y,
+                self.Y_LOW,
+                self.Y_HIGH,
+                1,
+                -1
+            )
 
             # ----------------------
             # PINZA
@@ -151,3 +152,26 @@ class GestureDetector:
                 count += 1
 
         return count >= 3
+
+    def hand_is_closed(self, hand):
+
+        return not self.hand_is_open(
+            hand
+        )
+
+    def axis_state(
+        self,
+        value,
+        low,
+        high,
+        low_state,
+        high_state
+    ):
+
+        if value < low:
+            return low_state
+
+        if value > high:
+            return high_state
+
+        return 0
